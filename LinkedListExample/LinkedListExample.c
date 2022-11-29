@@ -38,6 +38,9 @@ int main()
     list_remove_element(list, element);
     list_for_each(list, print);
     printf("\n");
+
+    int number = (int)list_get_head_data(list);
+    printf("head of list is: %d", number);
     
     list_destroy(list, NULL);
     
