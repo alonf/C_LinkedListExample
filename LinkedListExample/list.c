@@ -36,7 +36,7 @@ static node_ptr_t create_node(void* data_ptr, node_ptr_t prev_ptr, node_ptr_t ne
     node_ptr_t node_ptr = (node_ptr_t)malloc(sizeof(*(node_ptr_t)0));
     if (node_ptr == NULL)
         return (node_ptr_t)NULL;
-    
+
     node_ptr->data_ptr = data_ptr;
     node_ptr->prev_ptr = prev_ptr;
     node_ptr->next_ptr = next_ptr;
@@ -71,20 +71,20 @@ void list_destroy(list_t list, action_t* free_function)
         }
         list_remove_head(list);
     }
-    
+
     free(list_info);
 }
 
-list_operation_result_t list_add_head(list_t list, void* data_ptr)
+BOOL list_add_head(list_t list, void* data_ptr)
 {
     list_ptr_t list_info = to_list(list);
-    node_ptr_t node = create_node(data_ptr, 
-        list_get_tail(list_info), 
-            list_get_head(list_info));
-    
+    node_ptr_t node = create_node(data_ptr,
+        list_get_tail(list_info),
+        list_get_head(list_info));
+
     if (node == NULL)
         return LIST_FAILURE;
-    
+
     list_info->size++;
     if (list_info->size == 1)
     {
@@ -101,16 +101,38 @@ list_operation_result_t list_add_head(list_t list, void* data_ptr)
     return LIST_SUCCESS;
 }
 
-list_operation_result_t list_add_tail(list_t list, void* data_ptr)
+BOOL list_add_tail(list_t list, void* data_ptr)
 {
-    list_operation_result_t result =
+    BOOL result =
         list_add_head(list, data_ptr);
-    
+
     if (result == LIST_FAILURE)
         return LIST_FAILURE;
-    
+
     to_list(list)->head_ptr = list_get_head(to_list(list))->next_ptr;
     return LIST_SUCCESS;
+}
+
+void* list_get_head_data(list_t list)
+{
+    list_ptr_t list_info = to_list(list);
+
+    if (list_info->size == 0)
+    {
+        return (void*)NULL;
+    }
+    return list_info->head_ptr->data_ptr;
+}
+
+void* list_get_tail_data(list_t list)
+{
+    list_ptr_t list_info = to_list(list);
+
+    if (list_info->size == 0)
+    {
+        return (void*)NULL;
+    }
+    return list_info->head_ptr->prev_ptr->data_ptr;
 }
 
 void list_remove_head(list_t list)
@@ -133,24 +155,24 @@ void list_remove_tail(list_t list)
     list_ptr_t list_info = to_list(list);
     if (list_info->size == 0)
         return;
-    
+
     list_info->head_ptr = list_get_head(list_info)->prev_ptr;
     list_remove_head(list);
 }
 
-list_operation_result_t list_add_after(list_t list, element_t element, void* data_ptr)
+BOOL list_add_after(list_t list, element_t element, void* data_ptr)
 {
     list_ptr_t list_info = to_list(list);
-    if( element == list_info->head_ptr)
+    if (element == list_info->head_ptr)
     {
         return list_add_head(list, data_ptr);
     }
-    
+
     if (element == list_get_tail(list_info))
     {
         return list_add_tail(list, data_ptr);
     }
-    
+
     //else
     node_ptr_t node = create_node(data_ptr,
         to_node(element),
@@ -165,7 +187,7 @@ list_operation_result_t list_add_after(list_t list, element_t element, void* dat
     return LIST_SUCCESS;
 }
 
-list_operation_result_t list_add_before(list_t list, element_t element, void* data_ptr)
+BOOL list_add_before(list_t list, element_t element, void* data_ptr)
 {
     node_ptr_t prev = to_node(element)->prev_ptr;
     return list_add_after(list, prev, data_ptr);
@@ -185,13 +207,13 @@ void list_remove_element(list_t list, element_t element)
         list_remove_tail(list);
         return;
     }
-    
+
     node_ptr_t node = to_node(element);
     node->prev_ptr->next_ptr = node->next_ptr;
     node->next_ptr->prev_ptr = node->prev_ptr;
     free(node);
     list_info->size--;
-    
+
 }
 
 static node_ptr_t move_next(node_ptr_t node_ptr)
@@ -215,7 +237,7 @@ void list_for_each_direction(list_t list, action_t* action, move_next_t* next_fu
     }
 }
 
-void list_for_each(list_t list, action_t * action)
+void list_for_each(list_t list, action_t* action)
 {
     list_for_each_direction(list, action, move_next);
 }
