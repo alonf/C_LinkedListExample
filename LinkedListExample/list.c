@@ -113,26 +113,46 @@ BOOL list_add_tail(list_t list, void* data_ptr)
     return LIST_SUCCESS;
 }
 
-void* list_get_head_data(list_t list)
+void* list_get_data(list_t list, int element_index)
 {
     list_ptr_t list_info = to_list(list);
+    node_ptr_t node = list_get_head(list_info);
 
     if (list_info->size == 0)
     {
         return (void*)NULL;
     }
-    return list_info->head_ptr->data_ptr;
+
+    if (element_index == 0)
+    {
+        return node->data_ptr;
+    }
+    else if (element_index > 0)
+    {
+        for (int i = 0; i < element_index; i++)
+        {
+            node = move_next(node);
+        }
+        return node->data_ptr;
+    }
+    else if (element_index < 0)
+    {
+        for (int i = 0; i > element_index; i--)
+        {
+            node = move_prev(node);
+        }
+        return node->data_ptr;
+    }
+}
+
+void* list_get_head_data(list_t list)
+{
+    return list_get_data(list, 0);
 }
 
 void* list_get_tail_data(list_t list)
 {
-    list_ptr_t list_info = to_list(list);
-
-    if (list_info->size == 0)
-    {
-        return (void*)NULL;
-    }
-    return list_info->head_ptr->prev_ptr->data_ptr;
+    return list_get_data(list, -1);
 }
 
 void list_remove_head(list_t list)
