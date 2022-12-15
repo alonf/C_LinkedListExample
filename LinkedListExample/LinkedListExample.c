@@ -40,8 +40,14 @@ int main()
     printf("\n");
 
     int number = (int)list_get_head_data(list);
-    printf("head of list is: %d", number);
-    
+    printf("head of list is: %d\n", number);
+
+    for (int i = -3; i < 6; i++)
+    {
+        number = (int)list_get_data(list, i);
+        printf("Element %d of the list is: %d\n", i, number);
+    }
+
     list_destroy(list, NULL);
     
     return 0;

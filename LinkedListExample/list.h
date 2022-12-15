@@ -19,6 +19,8 @@ void		list_destroy(list_t list, action_t* free_function);
 BOOL		list_add_head(list_t list, void* data_ptr);
 BOOL		list_add_tail(list_t list, void* data_ptr);
 
+// element_index can be negative value. For ex. to get tail you need to address -1 element
+void*		list_get_data(list_t list, int element_index);
 void*		list_get_head_data(list_t list);
 void*		list_get_tail_data(list_t list);
 
